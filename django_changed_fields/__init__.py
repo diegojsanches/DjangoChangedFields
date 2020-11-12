@@ -15,12 +15,12 @@ class ChangedFieldsMixin(object):
             self.__last_queryset = type(self).objects.get(pk=self.pk) if self.pk else None
         return self.__last_queryset
 
-    def change_fields(self, *args):
-        new = set(model_to_dict(self, args).items())
+    def change_fields(self, *args, **kwargs):
+        new = set(model_to_dict(self, *args, **kwargs).items())
         if not self.pk:
             return list(dict(new).keys())
 
-        old = set(model_to_dict(self.last_queryset(), args).items())
+        old = set(model_to_dict(self.last_queryset(), *args, **kwargs).items())
         return list(dict(new - old).keys())
 
     def save(self, *args, **kwargs):
