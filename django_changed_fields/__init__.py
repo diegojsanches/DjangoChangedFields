@@ -16,11 +16,24 @@ class ChangedFieldsMixin(object):
         return self.__last_queryset
 
     def change_fields(self, *args, **kwargs):
-        new = set(model_to_dict(self, *args, **kwargs).items())
+        available_fields = map(
+            lambda field: field.name,
+            filter(
+                lambda field: not isinstance(field, (ManyToManyField, ManyToOneRel)),
+                self._meta.get_fields()
+            )
+        )
+        new = set(filter(
+            lambda item: item[0] in available_fields,
+            model_to_dict(self, *args, **kwargs).items())
+        )
         if not self.pk:
             return list(dict(new).keys())
 
-        old = set(model_to_dict(self.last_queryset(), *args, **kwargs).items())
+        old = set(filter(
+            lambda item: item[0] in available_fields,
+            model_to_dict(self.last_queryset(), *args, **kwargs).items()
+        ))
         return list(dict(new - old).keys())
 
     def save(self, *args, **kwargs):
