@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
     name='django_changed_fields',
-    version='0.2.1',
+    version='0.2.3',
     description='Testing installation of Package',
     url='https://github.com/diegojsanches/DjangoChangedFields',
     author='Diego Sanches',

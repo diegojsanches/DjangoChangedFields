@@ -1,6 +1,7 @@
 """
 Mixin to show changed fields per DRF resource.
 """
+from django.db.models import ManyToManyField, ManyToOneRel
 from django.forms import model_to_dict
 
 
@@ -16,13 +17,13 @@ class ChangedFieldsMixin(object):
         return self.__last_queryset
 
     def change_fields(self, *args, **kwargs):
-        available_fields = map(
+        available_fields = list(map(
             lambda field: field.name,
             filter(
                 lambda field: not isinstance(field, (ManyToManyField, ManyToOneRel)),
                 self._meta.get_fields()
             )
-        )
+        ))
         new = set(filter(
             lambda item: item[0] in available_fields,
             model_to_dict(self, *args, **kwargs).items())
