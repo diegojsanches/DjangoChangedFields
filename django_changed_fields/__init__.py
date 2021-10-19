@@ -24,16 +24,22 @@ class ChangedFieldsMixin(object):
                 self._meta.get_fields()
             )
         ))
-        new = set(filter(
-            lambda item: item[0] in available_fields,
-            model_to_dict(self, *args, **kwargs).items())
-        )
+        new = set(map(
+            lambda item: (item[0], item[1] if not isinstance(item[1], dict) else json.dumps(item[1])),
+            filter(
+                lambda item: item[0] in available_fields,
+                model_to_dict(self, *args, **kwargs).items()
+            )
+        ))
         if not self.pk:
             return list(dict(new).keys())
 
-        old = set(filter(
-            lambda item: item[0] in available_fields,
-            model_to_dict(self.last_queryset(), *args, **kwargs).items()
+        old = set(map(
+            lambda item: (item[0], item[1] if not isinstance(item[1], dict) else json.dumps(item[1])),
+            filter(
+                lambda item: item[0] in available_fields,
+                model_to_dict(self.last_queryset(), *args, **kwargs).items()
+            )
         ))
         return list(dict(new - old).keys())
 
