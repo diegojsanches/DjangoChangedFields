@@ -1,6 +1,8 @@
 """
 Mixin to show changed fields per DRF resource.
 """
+import json
+
 from django.db.models import ManyToManyField, ManyToOneRel
 from django.forms import model_to_dict
 
