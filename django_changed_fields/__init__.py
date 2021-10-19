@@ -26,8 +26,17 @@ class ChangedFieldsMixin(object):
                 self._meta.get_fields()
             )
         ))
+
+        def clean_instances(name, value):
+            if isinstance(value, set):
+                value = list(value)
+
+            if isinstance(value, dict) or isinstance(value, list):
+                value = json.dumps(value)
+            return (name, value)
+
         new = set(map(
-            lambda item: (item[0], item[1] if not isinstance(item[1], dict) else json.dumps(item[1])),
+            lambda item: clean_instances(*item),
             filter(
                 lambda item: item[0] in available_fields,
                 model_to_dict(self, *args, **kwargs).items()
@@ -37,7 +46,7 @@ class ChangedFieldsMixin(object):
             return list(dict(new).keys())
 
         old = set(map(
-            lambda item: (item[0], item[1] if not isinstance(item[1], dict) else json.dumps(item[1])),
+            lambda item: clean_instances(*item),
             filter(
                 lambda item: item[0] in available_fields,
                 model_to_dict(self.last_queryset(), *args, **kwargs).items()
